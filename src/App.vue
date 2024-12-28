@@ -1,47 +1,70 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import { reactive } from 'vue';
+  import Cabecalho from './components/Cabecalho.vue';
+  import Formulario from './components/Formulario.vue';
+  import ListaDeTarefas from './components/ListaDeTarefas.vue';
+  
+  const estado = reactive({
+    filtro: 'todas',
+    tarefaTemp: '',
+    tarefas: [
+      {
+        titulo: 'Estudar EC6',
+        finalizada: false,
+      },
+      {
+        titulo: 'Estudar Bootstrap',
+        finalizada: false,
+      },
+      {
+        titulo: 'Estudar VueJS',
+        finalizada: true,
+      },
+    ]
+  })
+
+  const getTarefasPendentes = () => {
+    return estado.tarefas.filter(tarefa => tarefa.finalizada === false)
+  }
+
+  const getTarefasFinalizadas = () => {
+    return estado.tarefas.filter(tarefa => tarefa.finalizada === true)
+  }
+
+  const getTarefasFiltradas = () => {
+    const { filtro }  = estado;
+
+    switch (filtro){
+      case 'pendentes':
+        return getTarefasPendentes();
+      case 'finalizadas':
+        return getTarefasFinalizadas();  
+      default:
+        return estado.tarefas;
+    }
+  }
+
+  const cadastraTarefa = () => {
+    const tarefaNova = {
+      titulo: estado.tarefaTemp,
+      finalizada: false,
+    }
+    estado.tarefas.push(tarefaNova);
+    estado.tarefaTemp = '';
+  }
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
+<h1>popo</h1>
+<div class="container">
+    <Cabecalho :tarefas-pendentes="getTarefasPendentes().length"/>
+    <Formulario :trocar-filtro="evento => estado.filtro = evento.target.value" :tarefa-temp="estado.tarefaTemp" :edita-tarefa-temp="evento => estado.tarefaTemp = evento.target.value" :cadastra-tarefa="cadastraTarefa" />
+    <ListaDeTarefas :tarefas="getTarefasFiltradas()" />
+  </div>
 
-  <main>
-    <TheWelcome />
-  </main>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-}
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
 </style>
